@@ -14,6 +14,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -30,6 +31,7 @@ public class Notification extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private NotificationType type;
 
+	@Setter
 	private boolean isRead;
 
 	@ManyToOne
