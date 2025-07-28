@@ -44,6 +44,8 @@ dependencies {
 
 	// https://mvnrepository.com/artifact/com.google.firebase/firebase-admin
 	implementation 'com.google.firebase:firebase-admin:8.1.0'
+
+	testImplementation 'org.mockito:mockito-core:5.18.0'
 }
 
 tasks.named('test') {
