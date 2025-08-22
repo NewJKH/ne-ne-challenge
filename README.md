@@ -4,8 +4,8 @@
 
 <img src="readmeImg/nene_challenge.png" width="600" />
 
-<span style="font-size:20px;">“참가비를 걸고 함께 도전한다!”</span><br/>
-<span style="font-size:20px;">단순 기록이 아닌, 강력한 <em>동기부여 플랫폼</em></span>
+> ### “참가비를 걸고 함께 도전한다!”
+> ### 단순 기록이 아닌, 강력한 동기부여 플랫폼
 
 </div>
 
