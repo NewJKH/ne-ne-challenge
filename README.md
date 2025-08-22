@@ -117,10 +117,7 @@
 ---
 
 <br>
-<div align="center">
-
 ## 🚀 우리가 만든 핵심 기능의 차별점
-</div>
 
 ### 👤 유저
 - 고성능 검색: *Elasticsearch + 캐시 레이어*
