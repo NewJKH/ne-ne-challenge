@@ -70,8 +70,12 @@
 
 이런 구조 속에서 사용자는 아래와 같은 여정을 거칩니다.
 
+<div align="center">
+
 ### 👤 사용자가 경험하는 여정
 <img src="readmeImg/userflow.png" width="600" />
+
+</div>
 
 ---
 
