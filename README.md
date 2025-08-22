@@ -9,6 +9,8 @@
 
 </div>
 
+---
+
 <div align="center">
 
 ## 📋 목차
@@ -26,6 +28,8 @@
 - [📊 프로젝트 성과](#-프로젝트-성과)
 - [🔮 추후 개선](#-추후-개선)
 
+---
+
 <div align="center">
 
 ## 💰 내돈 네돈 챌린지가 뭐에요?
@@ -41,6 +45,8 @@
 **참가비를 걸고 함께 도전하세요!**
 
 </div>
+
+---
 
 <div align="center">
 
@@ -66,6 +72,9 @@
 
 </div>
 
+---
+
+
 <div align="center">
 
 ## 🛠️ 기술 스택
@@ -74,6 +83,8 @@
 <p align="center">
 <img src="readmeImg/tech-stack.svg" width="100%" />
 </p>
+
+---
 
 <div align="center">
 
@@ -88,6 +99,8 @@
 
 ### 🗂️ ERD
 <img src="readmeImg/erd.png" width="600" />
+
+---
 
 <div align="center">
 
@@ -105,6 +118,7 @@
 | **CI/CD (GitHub Actions)** | *주 2~3회 배포*를 자동화해 안정성과 속도를 확보 | [왜 Jenkins 대신 GitHub Actions를 도입했을까?](#) |
 | **Promtail + Loki + Grafana** | 대규모 트래픽 환경에서 *로그·지표를 시각화*해 장애 추적 용이 | [왜 ELK(Elastic Stack) 대신 Loki를 선택했을까?](#) |
 
+---
 <br>
 <div align="center">
 
@@ -151,6 +165,7 @@
 - 토큰 관리: *웹/iOS/안드로이드 분리 저장*
 - 이력 추적: *성공/실패/대기 상태 관리*
 
+---
 
 <div align="center">
 
@@ -171,12 +186,14 @@
 2. 상태 추적 어려움 → 실시간 모니터링 부족
 3. 사용자 경험 저하 → 알림 누락 인지 불가
 
+---
 ## 🗄️ DB 기반 재전송 큐
 ![db-queue](https://velog.velcdn.com/images/wkdrnsgh1/post/d31b54c8-a156-4cff-9ff6-5fb05c48993b/image.png)
 
 - 실패 시 DB에 저장, 스케줄러가 주기적으로 재시도
 - IO 병목으로 성능 저하 발생
 
+---
 ## ⚡ Redis ZSet 기반 재전송 큐
 ![redis-queue](https://velog.velcdn.com/images/wkdrnsgh1/post/b1183645-a3c2-4214-a015-e82668292c47/image.png)
 
@@ -184,12 +201,14 @@
 - 스케줄러가 해당 시점 도달한 항목만 꺼내서 재전송
 - **메모리 기반**이라 DB 대비 훨씬 빠름
 
+---
 ## 🚀 Redis ZSet (병렬 처리)
 ![parallel-queue](https://velog.velcdn.com/images/wkdrnsgh1/post/97dd6f6c-ad60-47c3-b5a2-d569371ed08d/image.png)
 
 - **멀티 스레드 병렬 처리** → TPS 약 5배 향상
 - 30만 건 테스트에서도 안정적인 성능 확인
 
+---
 ## 📊 성능 비교 결과
 
 | 항목 | DB 기반 | Redis ZSet (단일) | Redis ZSet (병렬) |
@@ -200,12 +219,13 @@
 
 ![성능 비교 그래프](https://velog.velcdn.com/images/wkdrnsgh1/post/e4aa8abd-60ac-4e00-8020-23ab84828bdb/image.png)
 
+---
 ## 🔑 결론
 - Redis는 DB 대비 **약 3배 이상 빠른 처리**
 - 병렬 스레드 적용 시 **TPS 5배 이상 향상**
 - 모놀리틱 환경에서는 Kafka/RabbitMQ 대신 Redis로 가볍게 구현하는 게 적절
 
-
+---
 ## 📌 한계 & 개선 방향
 - JMeter 다중 스레드 실험은 로컬 환경 한계로 충분히 못함
 - 분산 환경(MSA)에서 Redisson 분산 락 실험은 추후 과제
