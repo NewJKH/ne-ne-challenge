@@ -68,18 +68,11 @@
 - *보상 기대* → 더 큰 성취
 - *커뮤니티* → 함께하니 지속
 
-<div align="center">
-
-👉 혼자가 아닌, **함께 성장하는 문화**를 만듭니다.
-
-</div>
-
 ---
 
-
 <div align="center">
 
-## 🛠️ 기술 스택
+## 🛠️ 우리가 사용한 기술들
 </div>
 
 <p align="center">
@@ -90,28 +83,7 @@
 
 <div align="center">
 
-## 📐 프로젝트 설계
-</div>
-
-
-### 사용자 이용 흐름
-<img src="readmeImg/userflow.png" width="600" />
-
-
-### 🏗️ 시스템 아키텍처
-<img src="readmeImg/architecture.png" width="600" />
-
-### 🚀 서비스 플로우
-<img src="readmeImg/flow.png" width="600" />
-
-### 🗂️ ERD
-<img src="readmeImg/erd.png" width="600" />
-
----
-
-<div align="center">
-
-## 🧠 우리는 이런 기술을 고민했어요.
+## 🧠 우리가 고민한 기술 선택들
 </div>
 
 | 기술 | 우리 프로젝트에서 왜 사용했는지 | 질문 |
@@ -126,10 +98,32 @@
 | **Promtail + Loki + Grafana** | 대규모 트래픽 환경에서 *로그·지표를 시각화*해 장애 추적 용이 | [왜 ELK(Elastic Stack) 대신 Loki를 선택했을까?](#) |
 
 ---
+
+<div align="center">
+
+## 📐 우리가 설계한 방식
+</div>
+
+
+### 👤 사용자 이용 흐름
+<img src="readmeImg/userflow.png" width="600" />
+
+
+### 🏗️ 시스템 아키텍처
+<img src="readmeImg/architecture.png" width="600" />
+
+### 🚀 서비스 플로우
+<img src="readmeImg/flow.png" width="600" />
+
+### 🗂️ ERD
+<img src="readmeImg/erd.png" width="600" />
+
+---
+
 <br>
 <div align="center">
 
-## 🚀 우리는 핵심기능에 이런 차별점을 뒀어요.
+## 🚀 우리가 만든 핵심 기능의 차별점
 </div>
 
 ### 👤 유저
@@ -176,7 +170,7 @@
 
 <div align="center">
 
-## ⚡ 우리는 성능을 이렇게 개선했어요.
+## ⚡ 우리가 진행한 성능 개선 방법
 </div>
 <details>
   <summary>💡 알림이 실패하면 어떻게 하죠?</summary>
@@ -601,7 +595,7 @@ https://ddokyun.tistory.com/65
 
 <div align="center">
 
-## 🚨 우리는 문제를 이렇게 해결했어요.
+## 🚨 우리가 해결한 문제와 접근 방식
 </div>
 
 <details>
