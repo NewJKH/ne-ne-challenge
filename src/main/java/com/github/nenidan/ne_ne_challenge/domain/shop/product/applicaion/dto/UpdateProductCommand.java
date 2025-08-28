@@ -2,16 +2,18 @@ package com.github.nenidan.ne_ne_challenge.domain.shop.product.applicaion.dto;
 
 import com.github.nenidan.ne_ne_challenge.domain.shop.vo.ProductId;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class UpdateProductCommand {
 
-    private final ProductId productId;
-    private final String productName;
-    private final String productDescription;
-    private final Integer productPrice;
+    private ProductId productId;
+    private String productName;
+    private String productDescription;
+    private Integer productPrice;
 }
 

@@ -1,6 +1,7 @@
 package com.github.nenidan.ne_ne_challenge.domain.admin.domain.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.github.nenidan.ne_ne_challenge.domain.admin.domain.type.DomainType;
 
@@ -13,9 +14,10 @@ public class StatisticDataModel {
     private final Long id;
     private final DomainType type;
     private final LocalDate statDate;
-    private final Long data1;
-    private final Long data2;
-    private final Long data3;
-    private final Long data4;
-    private final Long data5;
+    private final String payload;
+    private final LocalDateTime createdAt;
+
+    public static StatisticDataModel of(Long id, DomainType type, LocalDate statDate, String payload, LocalDateTime createdAt) {
+        return new StatisticDataModel(id, type, statDate, payload, createdAt);
+    }
 }

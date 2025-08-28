@@ -11,9 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.request.ChallengeSearchCond;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.request.HistorySearchCond;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.response.ChallengeHistoryResponse;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.response.ChallengeResponse;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.response.ChallengeSuccessRateResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.response.ChallengeDto;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.response.ChallengeHistoryDto;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.response.ChallengeSuccessRateDto;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.repository.ChallengeHistoryQueryRepository;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.repository.ChallengeQueryRepository;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeErrorCode;
@@ -27,32 +27,33 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ChallengeQueryService {
 
     private final ChallengeRepository challengeRepository;
     private final ChallengeQueryRepository queryRepository;
     private final ChallengeHistoryQueryRepository historyRepository;
 
-    public ChallengeResponse findChallengeById(Long challengeId) {
+    public ChallengeDto findChallengeById(Long challengeId) {
         return queryRepository.findChallengeById(challengeId)
             .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
     }
 
-    public CursorResponse<ChallengeResponse, LocalDateTime> getChallengeList(ChallengeSearchCond cond) {
-        return CursorResponse.of(queryRepository.findChallenges(cond), ChallengeResponse::getCreatedAt, cond.getSize());
+    public CursorResponse<ChallengeDto, LocalDateTime> getChallengeList(ChallengeSearchCond cond) {
+        return CursorResponse.of(queryRepository.findChallenges(cond), ChallengeDto::getCreatedAt, cond.getSize());
     }
 
-    public ChallengeHistoryResponse findHistoryById(Long historyId) {
+    public ChallengeHistoryDto findHistoryById(Long historyId) {
         return historyRepository.findHistoryById(historyId)
             .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.HISTORY_NOT_FOUND));
     }
 
-    public CursorResponse<ChallengeHistoryResponse, LocalDateTime> getHistoryList(Long challengeId, HistorySearchCond cond) {
-        return CursorResponse.of(historyRepository.findHistory(challengeId, cond), ChallengeHistoryResponse::getCreatedAt, cond.getSize());
+    public CursorResponse<ChallengeHistoryDto, LocalDateTime> getHistoryList(Long challengeId, HistorySearchCond cond) {
+        return CursorResponse.of(historyRepository.findHistory(challengeId, cond), ChallengeHistoryDto::getCreatedAt, cond.getSize());
     }
 
-    public ChallengeSuccessRateResponse getSuccessRate(Long userId, Long challengeId) {
-        ChallengeResponse challengeResponse = queryRepository.findChallengeById(challengeId)
+    public ChallengeSuccessRateDto getSuccessRate(Long userId, Long challengeId) {
+        ChallengeDto challengeResponse = queryRepository.findChallengeById(challengeId)
             .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
 
         if(challengeResponse.getStatus() != ChallengeStatus.ONGOING) {
@@ -69,10 +70,9 @@ public class ChallengeQueryService {
         long daysFromStart = ChronoUnit.DAYS.between(startDate, endDate);
         long totalPeriod = daysFromStart + 1; // 오늘 포함
 
-        return new ChallengeSuccessRateResponse((int) ((successfulDays * 100) / totalPeriod));
+        return new ChallengeSuccessRateDto((int) ((successfulDays * 100) / totalPeriod));
     }
 
-    @Transactional(readOnly = true)
     public CursorResponse<Long, Long> findParticipants(Long id, Long cursor, int size) {
         Challenge challenge = challengeRepository.findById(id)
             .orElseThrow(() -> new ChallengeException(ChallengeErrorCode.CHALLENGE_NOT_FOUND));
@@ -88,5 +88,4 @@ public class ChallengeQueryService {
 
         return new CursorResponse<>(result, nextCursor, hasNext);
     }
-
 }

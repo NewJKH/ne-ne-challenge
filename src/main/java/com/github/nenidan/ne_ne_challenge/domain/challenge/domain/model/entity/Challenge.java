@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import com.github.nenidan.ne_ne_challenge.domain.challenge.application.command.dto.UpdateChallengeInfoCommand;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.dto.ChallengeRequestInfo;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeErrorCode;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.exception.ChallengeException;
@@ -47,7 +46,7 @@ public class Challenge extends BaseEntity {
 
     private Long hostId;
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     @JoinColumn(name = "challenge_id")
     private Set<Participant> participants = new HashSet<>();
     private int minParticipants;
@@ -92,6 +91,10 @@ public class Challenge extends BaseEntity {
         }
 
         if(minParticipants > maxParticipants) {
+            throw new ChallengeException(REQUEST_ERROR);
+        }
+
+        if(participationFee <= 0) {
             throw new ChallengeException(REQUEST_ERROR);
         }
 
@@ -146,23 +149,26 @@ public class Challenge extends BaseEntity {
     }
 
     // null은 처리하지 않는다.
-    // fixme Command를 ChallengeInfo로 매핑 필요
-    public void updateInfo(Long loginUserId, UpdateChallengeInfoCommand command) {
+    public void updateInfo(Long loginUserId, ChallengeRequestInfo info) {
         verifyHost(loginUserId);
         verifyWaiting();
 
-        String newName = command.getName();
+        if(currentParticipantCount != 1) {
+            throw new ChallengeException(NOT_MODIFIABLE);
+        }
+
+        String newName = info.getName();
         if(newName != null && !newName.isEmpty()) {
             this.name = newName;
         }
 
-        String newDescription = command.getDescription();
+        String newDescription = info.getDescription();
         if(newDescription != null && !newDescription.isEmpty()) {
             this.description = newDescription;
         }
 
-        LocalDate newStartAt = command.getStartAt() == null ? this.startAt : command.getStartAt();
-        LocalDate newDueAt = command.getDueAt() == null ? this.dueAt : command.getDueAt();
+        LocalDate newStartAt = info.getStartAt() == null ? this.startAt : info.getStartAt();
+        LocalDate newDueAt = info.getDueAt() == null ? this.dueAt : info.getDueAt();
 
         if (newStartAt.isEqual(newDueAt) || newStartAt.isAfter(newDueAt)) {
             throw new ChallengeException(REQUEST_ERROR);
@@ -179,7 +185,7 @@ public class Challenge extends BaseEntity {
         this.startAt = newStartAt;
         this.dueAt = newDueAt;
 
-        ChallengeCategory newCategory = command.getCategory();
+        ChallengeCategory newCategory = info.getCategory();
         if(newCategory != null) {
             this.category = newCategory;
         }
@@ -233,12 +239,17 @@ public class Challenge extends BaseEntity {
             .findFirst()
             .orElseThrow(() -> new ChallengeException(NOT_PARTICIPATING));
 
-        participant.delete();
+        if(status == WAITING) {
+            totalFee -= participationFee;
+        }
+
         participants.remove(participant);
         currentParticipantCount--;
     }
 
-    public void ready() {
+    public void ready(Long requesterId) {
+        verifyHost(requesterId);
+
         if(status != WAITING) {
             throw new ChallengeException(INVALID_STATUS_TRANSITION);
         }
@@ -250,10 +261,11 @@ public class Challenge extends BaseEntity {
         status = READY;
     }
 
-    public void start() {
+    public void start(Long requesterId) {
         if(status != WAITING && status != READY) {
             throw new ChallengeException(INVALID_STATUS_TRANSITION);
         }
+        checkParticipation(requesterId);
 
         LocalDate today = LocalDate.now();
         if(startAt.isAfter(today)) {
@@ -267,19 +279,6 @@ public class Challenge extends BaseEntity {
         this.status = ONGOING;
     }
 
-    public void finish() {
-        if(status != ONGOING) {
-            throw new ChallengeException(INVALID_STATUS_TRANSITION);
-        }
-
-        LocalDate today = LocalDate.now();
-        if(dueAt.isAfter(today) || dueAt.isEqual(today)) {
-            throw new ChallengeException(ChallengeErrorCode.STILL_ONGOING);
-        }
-
-        this.status = FINISHED;
-    }
-
     public void checkParticipation(Long requesterId) {
         participants.stream()
             .filter(p -> p.getUserId().equals(requesterId))
@@ -289,7 +288,7 @@ public class Challenge extends BaseEntity {
 
     public void checkCanWrite() {
         LocalDate today = LocalDate.now();
-        if(status != ONGOING || today.isAfter(dueAt) || (today.isEqual(startAt) || today.isBefore(startAt))) {
+        if(status != ONGOING || today.isAfter(dueAt) || today.isBefore(startAt)) {
             throw new ChallengeException(ChallengeErrorCode.NOT_WRITABLE);
         }
     }

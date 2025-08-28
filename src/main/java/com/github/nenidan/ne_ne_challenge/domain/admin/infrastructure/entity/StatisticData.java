@@ -12,13 +12,21 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "statistics_Data")
+@Table(name = "statistics_data",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_stats_type_month",
+                columnNames = {"type", "stat_date"}
+        ))
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class StatisticData extends BaseEntity {
@@ -30,20 +38,15 @@ public class StatisticData extends BaseEntity {
     @Column(nullable = false, length = 50)
     private DomainType type;  // 통계 종류 구분용 enum
 
-    private LocalDate statDate;
+    private LocalDate statDate; // 월 anchor(1일)
 
-    @Column(name = "data1")
-    private Long data1;
+    @Lob
+    @Column(name = "payload", columnDefinition = "json", nullable = false)
+    private String payload;
 
-    @Column(name = "data2")
-    private Long data2;
+    @PrePersist @PreUpdate
+    void normalizeMonth() {
+        if (statDate != null) statDate = statDate.withDayOfMonth(1);
+    }
 
-    @Column(name = "data3")
-    private Long data3;
-
-    @Column(name = "data4")
-    private Long data4;
-
-    @Column(name = "data5")
-    private Long data5;
 }

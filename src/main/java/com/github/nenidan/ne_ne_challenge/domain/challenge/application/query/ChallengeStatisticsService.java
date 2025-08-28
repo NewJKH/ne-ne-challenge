@@ -1,19 +1,23 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.application.query;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.inner.InnerChallengeResponse;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.inner.InnerHistoryResponse;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.inner.InnerParticipantResponse;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.repository.InnerChallengeQueryRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 /**
  * 내부 조회용으로 ResponseDto를 반환해주는 서비스
  */
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ChallengeStatisticsService {
 
     private final InnerChallengeQueryRepository innerChallengeRepository;

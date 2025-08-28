@@ -1,7 +1,6 @@
 package com.github.nenidan.ne_ne_challenge.domain.challenge.infrastructure.repository;
 
 import static com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.QChallenge.*;
-import static com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.entity.QParticipant.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,7 +10,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.request.ChallengeSearchCond;
-import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.response.ChallengeResponse;
+import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.dto.response.ChallengeDto;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.application.query.repository.ChallengeQueryRepository;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeCategory;
 import com.github.nenidan.ne_ne_challenge.domain.challenge.domain.model.type.ChallengeStatus;
@@ -30,8 +29,8 @@ public class QueryDslChallengeQueryRepository implements ChallengeQueryRepositor
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Optional<ChallengeResponse> findChallengeById(Long challengeId) {
-        ChallengeResponse result = projectToChallengeResponse()
+    public Optional<ChallengeDto> findChallengeById(Long challengeId) {
+        ChallengeDto result = projectToChallengeResponse()
             .from(challenge)
             .where(challenge.id.eq(challengeId).and(notSoftDeleted()))
             .fetchOne();
@@ -40,12 +39,12 @@ public class QueryDslChallengeQueryRepository implements ChallengeQueryRepositor
     }
 
     @Override
-    public List<ChallengeResponse> findChallenges(ChallengeSearchCond cond) {
+    public List<ChallengeDto> findChallenges(ChallengeSearchCond cond) {
         BooleanBuilder builder = new BooleanBuilder();
-        builder.and(userIdEq(cond.getUserId()));
         builder.and(nameContains(cond.getName()));
         builder.and(statusEq(cond.getStatus()));
-        builder.and(dueAtEq(cond.getDueAt()));
+        builder.and(startAtGoe(cond.getStartAt()));
+        builder.and(dueAtLoe(cond.getDueAt()));
         builder.and(categoryEq(cond.getCategory()));
         builder.and(maxParticipationFeeLoe(cond.getMaxParticipationFee()));
         builder.and(createdAtLoe(cond.getCursor()));
@@ -53,23 +52,24 @@ public class QueryDslChallengeQueryRepository implements ChallengeQueryRepositor
 
         return projectToChallengeResponse()
             .from(challenge)
-            .join(challenge.participants, participant)
             .where(builder)
             .orderBy(challenge.createdAt.desc())
             .limit(cond.getSize() + 1)
             .fetch();
     }
 
-    private JPAQuery<ChallengeResponse> projectToChallengeResponse() {
+    private JPAQuery<ChallengeDto> projectToChallengeResponse() {
         return queryFactory
-            .select(Projections.bean(ChallengeResponse.class,
+            .select(Projections.bean(ChallengeDto.class,
                 challenge.id,
                 challenge.name,
                 challenge.description,
                 challenge.status,
                 challenge.category,
+                challenge.hostId,
                 challenge.minParticipants,
                 challenge.maxParticipants,
+                challenge.currentParticipantCount,
                 challenge.participationFee,
                 challenge.totalFee,
                 challenge.dueAt,
@@ -84,10 +84,6 @@ public class QueryDslChallengeQueryRepository implements ChallengeQueryRepositor
         return challenge.deletedAt.isNull();
     }
 
-    private BooleanExpression userIdEq(Long userId) {
-        return userId == null ? null : participant.userId.eq(userId);
-    }
-
     private BooleanExpression nameContains(String name) {
         return (name == null || name.isBlank()) ? null : challenge.name.containsIgnoreCase(name);
     }
@@ -96,8 +92,12 @@ public class QueryDslChallengeQueryRepository implements ChallengeQueryRepositor
         return status == null ? null : challenge.status.eq(status);
     }
 
-    private BooleanExpression dueAtEq(LocalDate dueAt) {
-        return dueAt == null ? null : challenge.dueAt.eq(dueAt);
+    private BooleanExpression startAtGoe(LocalDate startAt) {
+        return startAt == null ? null : challenge.startAt.goe(startAt);
+    }
+
+    private BooleanExpression dueAtLoe(LocalDate dueAt) {
+        return dueAt == null ? null : challenge.dueAt.loe(dueAt);
     }
 
     private BooleanExpression createdAtLoe(LocalDateTime cursor) {

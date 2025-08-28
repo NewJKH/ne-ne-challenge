@@ -16,22 +16,30 @@ import com.github.nenidan.ne_ne_challenge.domain.notification.application.dto.re
 import com.github.nenidan.ne_ne_challenge.domain.notification.application.dto.response.NotificationResponse;
 import com.github.nenidan.ne_ne_challenge.domain.notification.application.service.NotificationService;
 import com.github.nenidan.ne_ne_challenge.domain.notification.domain.entity.NotificationType;
+import com.github.nenidan.ne_ne_challenge.global.aop.annotation.AuditIgnore;
 import com.github.nenidan.ne_ne_challenge.global.dto.ApiResponse;
 import com.github.nenidan.ne_ne_challenge.global.dto.CursorResponse;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name="알림", description = "알림 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class NotificationController {
 	private final NotificationService notificationService;
 
-	/*
-	알림 생성 테스트 용 URL
-	 */
+	@Operation(summary = "생성/보내기", description = "알림을 전송 합니다.")
+	@ApiResponses({
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "알림 생성/보내기 완료"),
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "서버 오류")
+	})
 	@PostMapping("/notifications/send")
+	@AuditIgnore
 	public ResponseEntity<ApiResponse<Void>> send(@RequestBody SendNotificationRequest notificationRequest){
 		return ApiResponse.success(
 			HttpStatus.OK,
@@ -40,7 +48,13 @@ public class NotificationController {
 		);
 	}
 
+	@Operation(summary = "읽음", description = "알림을 읽음 처리 합니다.")
+	@ApiResponses({
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "알림 읽음 처리 완료"),
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "서버 오류")
+	})
 	@PatchMapping("/notifications/{id}")
+	@AuditIgnore
 	public ResponseEntity<ApiResponse<Void>> read(@RequestBody ReadNotificationRequest request,@PathVariable Long id){
 		return ApiResponse.success(
 			HttpStatus.OK,
@@ -56,7 +70,13 @@ public class NotificationController {
 		- 커서 기준 : 알림 ID
 		- 사이즈 : 10
 	 */
+	@Operation(summary = "목록", description = "알림 목록을 확인합니다.")
+	@ApiResponses({
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "알림 목록 조회 성공"),
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "서버 오류")
+	})
 	@GetMapping("/notifications")
+	@AuditIgnore
 	public ResponseEntity<ApiResponse<CursorResponse<NotificationResponse, Long>>> searchNotifications(
 		@RequestParam Long userId,
 		@RequestParam(defaultValue = "all") String isRead,

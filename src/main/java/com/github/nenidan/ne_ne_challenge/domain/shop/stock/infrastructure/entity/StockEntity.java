@@ -2,6 +2,8 @@ package com.github.nenidan.ne_ne_challenge.domain.shop.stock.infrastructure.enti
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.SQLRestriction;
+
 import com.github.nenidan.ne_ne_challenge.global.entity.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -16,6 +18,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @Table(name = "stock")
+@SQLRestriction("deleted_at IS NULL")
 @NoArgsConstructor
 public class StockEntity extends BaseEntity {
 
@@ -27,11 +30,15 @@ public class StockEntity extends BaseEntity {
     private Long productId;
 
     @Column(nullable = false)
+    private Integer reservedQuantity;
+
+    @Column(nullable = false)
     private Integer quantity;
 
-    public StockEntity(Long id, Long productId, Integer quantity, LocalDateTime deletedAt) {
+    public StockEntity(Long id, Long productId, Integer reservedQuantity, Integer quantity, LocalDateTime deletedAt) {
         this.id = id;
         this.productId = productId;
+        this.reservedQuantity = reservedQuantity;
         this.quantity = quantity;
         this.deletedAt = deletedAt;
     }
